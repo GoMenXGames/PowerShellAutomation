@@ -19,11 +19,34 @@ namespace PowerShellAutomation
         Collection<PSObject> psGroupMembers;
         public Collection<PSObject> psOUs;
         public Collection<PSObject> psDomain;
+        bool isElevated = false;
+        string userName;
 
-        public Main()
+
+        public Main(string ArgUserName)
         {
-            InitializeComponent();
-            Program.Mainform = this;
+            ps.AddScript("Get-ADGroupMember \"администраторы домена\"");
+            psUsers = ps.Invoke<PSObject>();
+            ps.Commands.Clear();
+            foreach (var chkUser in psUsers)
+                {
+                if (Convert.ToString(chkUser.Properties["SamAccountName"].Value) == ArgUserName) {
+                    MessageBox.Show("Добро пожаловать "+ Convert.ToString(chkUser.Properties["Name"].Value));
+                    userName = Convert.ToString(chkUser.Properties["SamAccountName"].Value);
+                    isElevated = true;
+                    break;
+                }
+            }
+            if (!isElevated)
+            {
+                MessageBox.Show("У авторизованого пользователя не достаточно прав!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                this.Close();
+                Application.Exit();
+            }
+            else {
+                InitializeComponent();
+                Program.Mainform = this;
+            }
         }
 
         private void GetButton_Click(object sender, EventArgs e)
@@ -158,18 +181,6 @@ namespace PowerShellAutomation
 
         private void Main_Load(object sender, EventArgs e)
         {
-            bool isElevated;
-            WindowsIdentity identity = WindowsIdentity.GetCurrent();
-            WindowsPrincipal principal = new WindowsPrincipal(identity);
-            isElevated = principal.IsInRole(WindowsBuiltInRole.Administrator);
-
-            if (isElevated == false)
-            {
-                MessageBox.Show("Запустите программу с помощью специального интерфейса от пользователя с правами администратора.", "Недостаточно прав", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                Application.Exit();
-            }
-            else 
-            { 
                 bool error = false;
                 try
                 {
@@ -182,8 +193,6 @@ namespace PowerShellAutomation
                 }
                 catch (CommandNotFoundException)
                 {
-                    StopIt stopItF = new StopIt();
-                    stopItF.Show();
                     MessageBox.Show("Возможно у вас не установлен компонент для работы с ActiveDirectory \nОбратитесь к системному администратору!", "Возникла ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     error = true;
                 }
@@ -199,12 +208,11 @@ namespace PowerShellAutomation
                         ps.AddCommand("Get-ADForest");
                         psDomain = ps.Invoke<PSObject>();
                         string text = Environment.UserDomainName;
-                        this.Text = "PowerShell GUI " + Program.version + " [" + Environment.UserDomainName + "\\" + Environment.UserName + "]";
+                        this.Text = "PowerShell GUI " + Program.version + " [" + Environment.UserDomainName + "\\" + userName + "]";
                         Cursor = Cursors.Default;
                     }
                     else { Application.Exit(); }
                 }
-            }
         }
 
         private void AddUserButton_Click(object sender, EventArgs e)

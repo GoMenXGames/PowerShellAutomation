@@ -12,17 +12,23 @@ namespace PowerShellAutomation
         public static UserGroupConfig UserGroupConfigForm; // Конфиг Групп безопасности
         public static UserCreateForm UserCreateform; //Создание пользователей
         public static StopIt stopItForm; // Lol
-        internal static string version = "v.0.5 alpha";
+        internal static string version = "v.0.6 alpha";
 
         /// <summary>
         /// Главная точка входа для приложения.
         /// </summary>
         [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Main());
+            try
+            {
+                Application.Run(new Main(args[0]));
+            }
+            catch (IndexOutOfRangeException) {
+                MessageBox.Show( "Ошибка запустите программу через окно авторизации", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }
