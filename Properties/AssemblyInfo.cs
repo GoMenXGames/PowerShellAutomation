@@ -6,13 +6,13 @@ using System;
 // Общие сведения об этой сборке предоставляются следующим набором
 // набора атрибутов. Измените значения этих атрибутов для изменения сведений,
 // связанных со сборкой.
-[assembly: AssemblyTitle("PowerShellGUI")]
-[assembly: AssemblyDescription("PowerShell GUI application for easy access to data from ActiveDirectory")]
-[assembly: AssemblyConfiguration("Alpha")]
+[assembly: AssemblyTitle("AD User & Group: Manager")]
+[assembly: AssemblyDescription("AD User & Group: Manager - application for easy access to user and group data from ActiveDirectory")]
+[assembly: AssemblyConfiguration("Release")]
 [assembly: AssemblyCompany("GoMenXGames")]
-[assembly: AssemblyProduct("PowerShellGUI")]
-[assembly: AssemblyCopyright("Copyright © GSoftwareXDev 2021")]
-[assembly: AssemblyTrademark("GSoftwareXDev")]
+[assembly: AssemblyProduct("AD User & Group: Manager")]
+[assembly: AssemblyCopyright("Copyright © GoSoftwareXDev 2021")]
+[assembly: AssemblyTrademark("GoSoftwareXDev")]
 
 // Установка значения False для параметра ComVisible делает типы в этой сборке невидимыми
 // для компонентов COM. Если необходимо обратиться к типу в этой сборке через
@@ -32,5 +32,5 @@ using System;
 // Можно задать все значения или принять номера сборки и редакции по умолчанию 
 // используя "*", как показано ниже:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.5.2.1")]
-[assembly: AssemblyFileVersion("0.5.2.1")]
+[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyFileVersion("1.0.0.0")]

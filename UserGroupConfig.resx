@@ -118,6 +118,202 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="GroupListBox.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Microsoft Sans Serif, 12.25pt</value>
+  </data>
+  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="GroupListBox.ItemHeight" type="System.Int32, mscorlib">
+    <value>20</value>
+  </data>
+  <data name="GroupListBox.Location" type="System.Drawing.Point, System.Drawing">
+    <value>12, 12</value>
+  </data>
+  <data name="GroupListBox.Size" type="System.Drawing.Size, System.Drawing">
+    <value>507, 244</value>
+  </data>
+  <data name="GroupListBox.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;GroupListBox.Name" xml:space="preserve">
+    <value>GroupListBox</value>
+  </data>
+  <data name="&gt;&gt;GroupListBox.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ListBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;GroupListBox.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;GroupListBox.ZOrder" xml:space="preserve">
+    <value>6</value>
+  </data>
+  <data name="AddGroupButton.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Microsoft Sans Serif, 12.25pt</value>
+  </data>
+  <data name="AddGroupButton.Location" type="System.Drawing.Point, System.Drawing">
+    <value>140, 296</value>
+  </data>
+  <data name="AddGroupButton.Size" type="System.Drawing.Size, System.Drawing">
+    <value>115, 34</value>
+  </data>
+  <data name="AddGroupButton.TabIndex" type="System.Int32, mscorlib">
+    <value>4</value>
+  </data>
+  <data name="AddGroupButton.Text" xml:space="preserve">
+    <value>Добавить в</value>
+  </data>
+  <data name="&gt;&gt;AddGroupButton.Name" xml:space="preserve">
+    <value>AddGroupButton</value>
+  </data>
+  <data name="&gt;&gt;AddGroupButton.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;AddGroupButton.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;AddGroupButton.ZOrder" xml:space="preserve">
+    <value>5</value>
+  </data>
+  <data name="RemoveGroupButton.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Microsoft Sans Serif, 12.25pt</value>
+  </data>
+  <data name="RemoveGroupButton.Location" type="System.Drawing.Point, System.Drawing">
+    <value>12, 296</value>
+  </data>
+  <data name="RemoveGroupButton.Size" type="System.Drawing.Size, System.Drawing">
+    <value>122, 34</value>
+  </data>
+  <data name="RemoveGroupButton.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="RemoveGroupButton.Text" xml:space="preserve">
+    <value>Удалить из</value>
+  </data>
+  <data name="&gt;&gt;RemoveGroupButton.Name" xml:space="preserve">
+    <value>RemoveGroupButton</value>
+  </data>
+  <data name="&gt;&gt;RemoveGroupButton.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;RemoveGroupButton.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;RemoveGroupButton.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="RefreshGroupButton.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Microsoft Sans Serif, 12.25pt</value>
+  </data>
+  <data name="RefreshGroupButton.Location" type="System.Drawing.Point, System.Drawing">
+    <value>260, 296</value>
+  </data>
+  <data name="RefreshGroupButton.Size" type="System.Drawing.Size, System.Drawing">
+    <value>10, 34</value>
+  </data>
+  <data name="RefreshGroupButton.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="RefreshGroupButton.Text" xml:space="preserve">
+    <value>Обновить</value>
+  </data>
+  <data name="&gt;&gt;RefreshGroupButton.Name" xml:space="preserve">
+    <value>RefreshGroupButton</value>
+  </data>
+  <data name="&gt;&gt;RefreshGroupButton.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;RefreshGroupButton.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;RefreshGroupButton.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="GroupsComboBox.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Microsoft Sans Serif, 12.25pt</value>
+  </data>
+  <data name="GroupsComboBox.Location" type="System.Drawing.Point, System.Drawing">
+    <value>12, 262</value>
+  </data>
+  <data name="GroupsComboBox.Size" type="System.Drawing.Size, System.Drawing">
+    <value>507, 28</value>
+  </data>
+  <data name="GroupsComboBox.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;GroupsComboBox.Name" xml:space="preserve">
+    <value>GroupsComboBox</value>
+  </data>
+  <data name="&gt;&gt;GroupsComboBox.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ComboBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;GroupsComboBox.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;GroupsComboBox.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="GroupCreatorButton.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Microsoft Sans Serif, 12.25pt</value>
+  </data>
+  <data name="GroupCreatorButton.Location" type="System.Drawing.Point, System.Drawing">
+    <value>404, 296</value>
+  </data>
+  <data name="GroupCreatorButton.Size" type="System.Drawing.Size, System.Drawing">
+    <value>115, 34</value>
+  </data>
+  <data name="GroupCreatorButton.TabIndex" type="System.Int32, mscorlib">
+    <value>4</value>
+  </data>
+  <data name="GroupCreatorButton.Text" xml:space="preserve">
+    <value>Создать</value>
+  </data>
+  <data name="&gt;&gt;GroupCreatorButton.Name" xml:space="preserve">
+    <value>GroupCreatorButton</value>
+  </data>
+  <data name="&gt;&gt;GroupCreatorButton.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;GroupCreatorButton.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;GroupCreatorButton.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="GroupRemoverButton.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Microsoft Sans Serif, 12.25pt</value>
+  </data>
+  <data name="GroupRemoverButton.Location" type="System.Drawing.Point, System.Drawing">
+    <value>276, 296</value>
+  </data>
+  <data name="GroupRemoverButton.Size" type="System.Drawing.Size, System.Drawing">
+    <value>122, 34</value>
+  </data>
+  <data name="GroupRemoverButton.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="GroupRemoverButton.Text" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="&gt;&gt;GroupRemoverButton.Name" xml:space="preserve">
+    <value>GroupRemoverButton</value>
+  </data>
+  <data name="&gt;&gt;GroupRemoverButton.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;GroupRemoverButton.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;GroupRemoverButton.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
+    <value>6, 13</value>
+  </data>
+  <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
+    <value>531, 339</value>
+  </data>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         AAABAAEAgIAAAAEAIAAoCAEAFgAAACgAAACAAAAAAAEAAAEAIAAAAAAAAAABAMMOAADDDgAAAAAAAAAA
@@ -1249,5 +1445,14 @@
         ////////////////////////////////////////////////////////////////////////////////
         //////////////////////////////////8=
 </value>
+  </data>
+  <data name="$this.Text" xml:space="preserve">
+    <value>Конфигурация групп безопасности пользователя</value>
+  </data>
+  <data name="&gt;&gt;$this.Name" xml:space="preserve">
+    <value>UserGroupConfig</value>
+  </data>
+  <data name="&gt;&gt;$this.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Form, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

@@ -5,15 +5,22 @@ using System.Security;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
+using System.ComponentModel;
+using System.Globalization;
 
 namespace PowerShellAutomation
 {
     public partial class UserCreateForm : Form
     {
-        //Работаем с файликом
-        //static string path = @"script.ps1";
 
-        
+        public void ChangeLanguage()
+        {
+            foreach (Control c in this.Controls)
+            {
+                ComponentResourceManager resources = new ComponentResourceManager(typeof(UserCreateForm));
+                resources.ApplyResources(c, c.Name, new CultureInfo(Program.Mainform.lang));
+            }
+        }
 
         public UserCreateForm()
         {
@@ -23,6 +30,15 @@ namespace PowerShellAutomation
 
         private void UserCreateForm_Load(object sender, EventArgs e)
         {
+            ChangeLanguage();
+            if (Program.Mainform.lang == "ru")
+            {
+                this.Text = "Создание пользователя";
+            }
+            else
+            {
+                this.Text = "Create user";
+            }
             foreach (var psOU in Program.Mainform.psOUs)
             OUComboBox.Items.Add(psOU.Properties["Name"].Value);
         }
@@ -73,15 +89,34 @@ namespace PowerShellAutomation
         {
             if (NameTextBox.Text == "" || SurnameTextBox.Text == "" || GivenNameTextBox.Text == "" || SamAccountNameTextBox.Text == "" || OUComboBox.Text == "" || UserPrincipalNameTextBox.Text == "" || PasswordTextBox.Text == "")
             {
-                MessageBox.Show("Заполните поля!!!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                
+                if (Program.Mainform.lang == "ru")
+                {
+                    MessageBox.Show("Заполните поля!!!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else
+                {
+                    MessageBox.Show("Заполните поля!!!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
             else {
-                DialogResult result = MessageBox.Show("Что хотите создать пользователя с именем " + UserPrincipalNameTextBox.Text + "\n в " + OUComboBox.Text, "Вы уверены?", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
-                
+                DialogResult result;
+                if (Program.Mainform.lang == "ru")
+                {
+                    result = MessageBox.Show("Что хотите создать пользователя с именем " + UserPrincipalNameTextBox.Text + "\n в " + OUComboBox.Text, "Вы уверены?", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+
+                }
+                else
+                {
+                    result = MessageBox.Show("What do you want to create a user named " + UserPrincipalNameTextBox.Text + "\n in" + OUComboBox.Text, "Are you sure?", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+
+                }
+
                 switch (result)
                 {
                     case DialogResult.Yes:
                         ADUserCreate(NameTextBox.Text , GivenNameTextBox.Text, SurnameTextBox.Text, SamAccountNameTextBox.Text , UserPrincipalNameTextBox.Text , OUComboBox.Text, PasswordTextBox.Text);
+                        Program.Mainform.checkPSErrors();
                         this.Close();
                         Program.Mainform.UpdateUserList();
                         Program.Mainform.UsersComboBox.Text = NameTextBox.Text;

@@ -9,11 +9,21 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Threading;
 using System.Management.Automation;
+using System.Globalization;
 
 namespace PowerShellAutomation
 {
     public partial class UserGroupConfig : Form
     {
+        public void ChangeLanguage()
+        {
+            foreach (Control c in this.Controls)
+            {
+                ComponentResourceManager resources = new ComponentResourceManager(typeof(UserGroupConfig));
+                resources.ApplyResources(c, c.Name, new CultureInfo(Program.Mainform.lang));
+            }
+        }
+
         public UserGroupConfig()
         {
             Program.UserGroupConfigForm = this;
@@ -22,19 +32,20 @@ namespace PowerShellAutomation
 
         private void GroupConfigForm_Load(object sender, EventArgs e)
         {
+            ChangeLanguage();
             RefreshGroups();
         }
 
         private void RefreshGroups()
         {
-            Cursor = Cursors.WaitCursor;
+            Cursor.Current = Cursors.WaitCursor;
             GroupListBox.Items.Clear();
             GroupListBox.Items.AddRange(Program.Mainform.GroupListBox.Items);
             foreach (var group in Program.Mainform.psGroups)
             {
                 GroupsComboBox.Items.Add(group.Properties["Name"].Value);
             }
-            Cursor = Cursors.Default;
+            Cursor.Current = Cursors.Default;
         }
 
         private void GroupConfigForm_FormClosed(object sender, FormClosedEventArgs e)
@@ -66,7 +77,17 @@ namespace PowerShellAutomation
             {
                 psAddGroupMember(GroupsComboBox.SelectedIndex, Program.Mainform.SamAccountNameTextBox.Text);
             }
-            else { MessageBox.Show("Выберите группу из выпадающего списка", "Уведомление", MessageBoxButtons.OK, MessageBoxIcon.Information); }
+            else {
+                if (Program.Mainform.lang == "ru")
+                {
+                    MessageBox.Show("Выберите группу из выпадающего списка", "Уведомление", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show("Select a group from the drop-down list", " Notification", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                
+            }
         }
 
         private void psAddGroupMember(int selectedGroupID, string username)
@@ -87,7 +108,15 @@ namespace PowerShellAutomation
                 psRemoveGroupMember(GroupsComboBox.SelectedIndex, Program.Mainform.SamAccountNameTextBox.Text);
             }
             else {
-                MessageBox.Show("Выберете группу безопасности из списка выше.", "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (Program.Mainform.lang == "ru")
+                {
+                    MessageBox.Show("Выберете группу безопасности из списка выше.", "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else
+                {
+                    MessageBox.Show("Please select a security group from the list above. ", " Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                
             }
             //Remove - ADGroupMember - Identity DocumentReaders - Members DavidChew
         }
@@ -104,12 +133,12 @@ namespace PowerShellAutomation
 
         private void RefreshGroupButton_Click(object sender, EventArgs e)
         {
-            Cursor = Cursors.WaitCursor;
+            Cursor.Current = Cursors.WaitCursor;
             GroupsComboBox.Items.Clear();
             GroupListBox.Items.Clear();
             Program.Mainform.PullGroups(Program.Mainform.psUser.Properties["Name"].Value);
             RefreshGroups();
-            Cursor = Cursors.Default;
+            Cursor.Current = Cursors.Default;
         }
 
         private void GroupsComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -119,25 +148,51 @@ namespace PowerShellAutomation
 
         private void GroupCreatorButton_Click(object sender, EventArgs e)
         {
-            Cursor = Cursors.WaitCursor;
+            Cursor.Current = Cursors.WaitCursor;
             bool alreadyHas = false;
+            string tempString = GroupsComboBox.Text.Trim();
+            GroupsComboBox.Text = tempString;
             if (GroupsComboBox.Text == "")
             {
-                MessageBox.Show("Напишите название группы в поле выподающего списка!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (Program.Mainform.lang == "ru")
+                {
+                    MessageBox.Show("Напишите название группы в поле выподающего списка!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else
+                {
+                    MessageBox.Show("Write the name of the group in the field of the drop-down list!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
             }
-            else
             if (GroupsComboBox.Text != "") {
                 foreach (var Group in GroupsComboBox.Items) {
                     if (Group.ToString() == GroupsComboBox.Text) {
-                        MessageBox.Show("Данная группа безопасности уже существует!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                        if (Program.Mainform.lang == "ru")
+                        {
+                            MessageBox.Show("Данная группа безопасности уже существует!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                        else
+                        {
+                            MessageBox.Show("This security group already exists! ", " Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                        
                         alreadyHas = true;
                         break;
                     }
                 }
             }
-            if (!alreadyHas)
+            if (!alreadyHas && GroupsComboBox.Text != "")
             {
-                DialogResult result = MessageBox.Show("Что хотите создать группу безопасности с именем: " + GroupsComboBox.Text, "Вы уверены?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                DialogResult result;
+                if (Program.Mainform.lang == "ru")
+                {
+                    result = MessageBox.Show("Что хотите создать группу безопасности с именем: " + GroupsComboBox.Text, "Вы уверены?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                }
+                else
+                {
+                    result = MessageBox.Show("What do you want to create a security group named: " + GroupsComboBox.Text, "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                }
 
                 switch (result)
                 {
@@ -150,7 +205,7 @@ namespace PowerShellAutomation
                 }
 
             }
-            Cursor = Cursors.Default;
+            Cursor.Current = Cursors.Default;
         }
 
         private void GroupCreate(string Name)
@@ -165,17 +220,35 @@ namespace PowerShellAutomation
 
         private void GroupRemoverButton_Click(object sender, EventArgs e)
         {
-            Cursor = Cursors.WaitCursor;
+            Cursor.Current = Cursors.WaitCursor;
             bool Null = false;
             try { string rofl = GroupsComboBox.SelectedItem.ToString(); }
             catch { Null = true; }
             if (Null)
             {
-                MessageBox.Show("Выберите группу из выподающего списка!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (Program.Mainform.lang == "ru")
+                {
+                    MessageBox.Show("Выберите группу из выподающего списка!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else
+                {
+                    MessageBox.Show("Select a group from the drop-down list! "," Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                
             }
             else
             {
-                DialogResult result = MessageBox.Show("Что хотите удалить группу безопасности с именем: " + GroupsComboBox.SelectedItem.ToString(), "Вы уверены?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                DialogResult result;
+                if (Program.Mainform.lang == "ru")
+                {
+                    result = MessageBox.Show("Что хотите удалить группу безопасности с именем: " + GroupsComboBox.SelectedItem.ToString(), "Вы уверены?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                }
+                else
+                {
+                    result = MessageBox.Show("What do you want to delete a security group named:" + GroupsComboBox.SelectedItem.ToString(), "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                }
 
                 switch (result)
                 {
@@ -189,7 +262,7 @@ namespace PowerShellAutomation
                 }
 
             }
-            Cursor = Cursors.Default;
+            Cursor.Current = Cursors.Default;
         }
 
         private void GroupRemove(string Name)

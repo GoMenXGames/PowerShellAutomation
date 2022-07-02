@@ -1,17 +1,19 @@
 ﻿using System;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 using System.Management.Automation;
 using System.Collections.ObjectModel;
-using System.IO;
-using System.Security.Principal;
+using System.ComponentModel;
+using System.Globalization;
 
 namespace PowerShellAutomation
 {
 
     public partial class Main : Form
     {
+        //GET
+        public string lang = "ru";
+        public string startlang = "en";
         PowerShell ps = PowerShell.Create();
         Collection<PSObject> psUsers;
         public PSObject psUser;
@@ -21,17 +23,37 @@ namespace PowerShellAutomation
         public Collection<PSObject> psDomain;
         bool isElevated = false;
         string userName;
+        bool isChecked;
+        string path = Environment.CurrentDirectory;
 
-
-        public Main(string ArgUserName)
+        public void ChangeLanguage()
         {
-            ps.AddScript("Get-ADGroupMember \"администраторы домена\"");
+            foreach (Control c in this.Controls)
+            {
+                ComponentResourceManager resources = new ComponentResourceManager(typeof(Main));
+                resources.ApplyResources(c, c.Name, new CultureInfo(Program.Mainform.lang));
+            }
+        }
+
+        public Main(string ArgUserName, string ArgLang)
+        {
+            lang = ArgLang;
+            ps.AddScript("Get-ADGroupMember \"domain admins\"");
             psUsers = ps.Invoke<PSObject>();
             ps.Commands.Clear();
             foreach (var chkUser in psUsers)
+            {
+                if (Convert.ToString(chkUser.Properties["SamAccountName"].Value) == ArgUserName)
                 {
-                if (Convert.ToString(chkUser.Properties["SamAccountName"].Value) == ArgUserName) {
-                    MessageBox.Show("Добро пожаловать "+ Convert.ToString(chkUser.Properties["Name"].Value));
+                    if (lang == "ru")
+                    {
+                        MessageBox.Show("Добро пожаловать " + Convert.ToString(chkUser.Properties["Name"].Value));
+                    }
+                    else
+                    {
+                        MessageBox.Show("Welcome " + Convert.ToString(chkUser.Properties["Name"].Value));
+                    }
+                    
                     userName = Convert.ToString(chkUser.Properties["SamAccountName"].Value);
                     isElevated = true;
                     break;
@@ -39,13 +61,77 @@ namespace PowerShellAutomation
             }
             if (!isElevated)
             {
-                MessageBox.Show("У авторизованого пользователя не достаточно прав!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (lang == "ru")
+                {
+                    MessageBox.Show("У авторизованого пользователя не достаточно прав!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else
+                {
+                    MessageBox.Show("The authorized user does not have enough rights! ", " Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
                 this.Close();
                 Application.Exit();
             }
-            else {
+            else
+            {
+
                 InitializeComponent();
                 Program.Mainform = this;
+
+            }
+        }
+
+        public void checkPSErrors()
+        {
+            if (ps.HadErrors)
+            { //Проверяем его на ошибки 
+                for (int i = 0; i < ps.Streams.Error.Count; i++)
+                {
+                    string commands = "";
+                    string error = ps.Streams.Error[i].Exception.Message.ToString();
+
+                    for (int j = 0; j < ps.Commands.Commands.Count; j++)
+                    {
+                        commands += "\n" + ps.Commands.Commands[j].CommandText;
+                        string parameters = "";
+                        if (ps.Commands.Commands[j].Parameters.Count > 0)
+                        {
+                            for (int k = 0; k < ps.Commands.Commands[j].Parameters.Count; k++)
+                            {
+                                parameters = "\n- " + ps.Commands.Commands[j].Parameters[k].Name + ": " + ps.Commands.Commands[j].Parameters[k].Value + ", ";
+                            }
+                        }
+                    }
+                    if (error == "The input object cannot be bound to any parameters for the command either because the command does not take pipeline input or the input and its properties do not match any of the parameters that take pipeline input." || error == "Не удается привязать объект ввода к любым параметрам команды, так как команда не принимает входные данные конвейера, либо входные данные и их свойства не совпадают с любыми из параметров, принимающих входные данные конвейера.")
+                    {
+                        //LUL
+                    }
+                    else if (error == "Не удается выполнить команду из-за следующей ошибки: Неверно задано имя папки.")
+                    {
+                        if (lang == "ru")
+                        {
+                            MessageBox.Show("Переустановите программу в другой папке.", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        else
+                        {
+                            MessageBox.Show("Reinstall the program in a different folder. ", " Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        
+                    }
+                    else
+                    {
+                        MessageBox.Show(commands + "\n" + error + ", \n" + path, "Ошибка Powershell [" + i + "]", MessageBoxButtons.OK);
+                        /*
+                        string pathfile = Environment.CurrentDirectory+@"\errors.log";
+                        StreamWriter stream = new StreamWriter(pathfile, true, Encoding.Default, 10);
+                        string errortext = "Ошибка Powershell[" + i + "]" + commands + "\n" + error + ", \n" + path;
+                        stream.Write(errortext);
+                        stream.Close();
+                        stream.Dispose();
+                        */
+
+                    }
+                }
             }
         }
 
@@ -59,25 +145,50 @@ namespace PowerShellAutomation
 
         private void UpdateOUList()
         {
-            Cursor = Cursors.WaitCursor;
+            Cursor.Current = Cursors.WaitCursor;
 
             //  Код
             ps.AddCommand("Get-ADOrganizationalUnit").AddParameter("Filter", "*");
             psOUs = ps.Invoke<PSObject>();
+            checkPSErrors();
             ps.Commands.Clear();
             //
 
-            Cursor = Cursors.Default;
+            Cursor.Current = Cursors.Default;
         }
 
         private void UpdateAllTextBoxes()
         {
-            Cursor = Cursors.WaitCursor;
+            Cursor.Current = Cursors.WaitCursor;
             DistinguishedNameListBox.Items.Clear();
-            foreach (var psUser in psUsers) {
+            foreach (var psUser in psUsers)
+            {
                 if (UsersComboBox.Text == Convert.ToString(psUser.Properties["Name"].Value))
                 {
                     //Заполнение всех полей
+                    if (Convert.ToString(psUser.Properties["Enabled"].Value) == "True") { 
+                        isChecked = true; panel1.BackColor = Color.OliveDrab;
+                        if (lang == "ru")
+                        {
+                            UserSwitchButton.Text = "Выключть";
+                        }
+                        else
+                        {
+                            UserSwitchButton.Text = "Disable";
+                        }
+                    } 
+                    else {
+                        isChecked = false; panel1.BackColor = Color.Maroon;
+                        if (lang == "ru")
+                        {
+                            UserSwitchButton.Text = "Включить";
+                        }
+                        else
+                        {
+                            UserSwitchButton.Text = "Enable";
+                        }
+                    };
+                    radioButton1.Checked = isChecked;
                     SamAccountNameTextBox.Text = Convert.ToString(psUser.Properties["SamAccountName"].Value);
                     GivenNametextBox.Text = Convert.ToString(psUser.Properties["GivenName"].Value);
                     SurNametextBox.Text = Convert.ToString(psUser.Properties["SurName"].Value);
@@ -92,21 +203,30 @@ namespace PowerShellAutomation
 
                     break;
                 }
-                else if (string.IsNullOrEmpty(UsersComboBox.Text)) {
+                else if (string.IsNullOrEmpty(UsersComboBox.Text))
+                {
                     break;
                 }
             }
-            Cursor = Cursors.Default;
+            Cursor.Current = Cursors.Default;
         }
 
         internal void testMessageBox(string text)
         {
-            MessageBox.Show(text, "Сообщение");
+            
+            if (lang == "ru")
+            {
+                MessageBox.Show(text, "Сообщение");
+            }
+            else
+            {
+                MessageBox.Show(text, "Message");
+            }
         }
 
         public void PullGroups(object value)
         {
-            Cursor = Cursors.WaitCursor;
+            Cursor.Current = Cursors.WaitCursor;
             UpdateGroupList();
             GroupListBox.Items.Clear();
             //Запуск перебора Групп
@@ -128,16 +248,24 @@ namespace PowerShellAutomation
                 }
                 catch (Exception e)
                 {
-                    GroupListBox.Items.Add(e + " !ОШИБКА! " + Convert.ToString(psGroup.Properties["Name"].Value));
+                    
+                    if (lang == "ru")
+                    {
+                        GroupListBox.Items.Add(e + " !ОШИБКА! " + Convert.ToString(psGroup.Properties["Name"].Value));
+                    }
+                    else
+                    {
+                        GroupListBox.Items.Add(e + " !ERROR! " + Convert.ToString(psGroup.Properties["Name"].Value));
+                    }
                 }
 
             }
-            Cursor = Cursors.Default;
+            Cursor.Current = Cursors.Default;
         }
 
         public void UpdateUserList()
         {
-            Cursor = Cursors.WaitCursor;
+            Cursor.Current = Cursors.WaitCursor;
             UsersComboBox.Items.Clear();
             ps.AddCommand("Get-ADUser").AddParameter("Filter", "*");
             psUsers = ps.Invoke<PSObject>();
@@ -147,72 +275,113 @@ namespace PowerShellAutomation
                 string UserText = Convert.ToString(psUser.Properties["Name"].Value);
                 UsersComboBox.Items.Add(UserText);
             }
-            Cursor = Cursors.Default;
+            Cursor.Current = Cursors.Default;
         }
 
         private void UpdateGroupList()
         {
+
+            Cursor.Current = Cursors.WaitCursor;
             ps.AddCommand("Get-ADGroup").AddParameter("Filter", "*");
-            Cursor = Cursors.WaitCursor;
             psGroups = ps.Invoke<PSObject>();
+            checkPSErrors();
             ps.Commands.Clear();
-            Cursor = Cursors.Default;
+            Cursor.Current = Cursors.Default;
         }
 
         private void UsersComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
+            Cursor.Current = Cursors.WaitCursor;
             UpdateAllTextBoxes();
+            Cursor.Current = Cursors.Default;
         }
 
         private void GroupChangeButton_Click(object sender, EventArgs e)
         {
             if (UsersComboBox.SelectedIndex != -1)
             {
-                this.Enabled = false;
-                UserGroupConfig GroupConfigF = new UserGroupConfig();
-                GroupConfigF.Show();
+                if (SamAccountNameTextBox.Text == "Administrator")
+                {
+
+                    if (lang == "ru")
+                    {
+                        MessageBox.Show("Взаимодействие с пользователем Administrator запрещено!", "Доступ запрещен!", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Interaction with the Administrator user is prohibited!", "Access is denied!", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+
+                    }
+                    
+                }
+                else
+                {
+                    this.Enabled = false;
+                    UserGroupConfig GroupConfigF = new UserGroupConfig();
+                    GroupConfigF.Show();
+                }
             }
             else
             {
-                MessageBox.Show("Выберете пользователя из выподающего списка.", "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                
+                if (lang == "ru")
+                {
+                    MessageBox.Show("Выберете пользователя из выподающего списка.", "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else
+                {
+                    MessageBox.Show("Select a user from the dropdown list. "," Error! ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                }
             }
-            
         }
 
         private void Main_Load(object sender, EventArgs e)
         {
-                bool error = false;
-                try
-                {
-                    string script = "Get-ADUser -Filter *";
-                    Collection<PSObject> obj = ps.AddScript(script).Invoke<PSObject>();
+            linkLabelLanguage.Text = lang;
+            ChangeLanguage();
+            bool error = false;
+            try
+            {
+                string script = "Get-ADUser -Filter *";
+                Collection<PSObject> obj = ps.AddScript(script).Invoke<PSObject>();
+                checkPSErrors();
 
-                    //MessageBox.Show(script);
-                    if (obj.Count == 0) { throw new CommandNotFoundException(); }
-                    ps.Commands.Clear();
-                }
-                catch (CommandNotFoundException)
+                if (obj.Count == 0) { throw new CommandNotFoundException(); }
+                ps.Commands.Clear();
+            }
+            catch (CommandNotFoundException)
+            {
+                if (lang == "ru")
                 {
                     MessageBox.Show("Возможно у вас не установлен компонент для работы с ActiveDirectory \nОбратитесь к системному администратору!", "Возникла ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    error = true;
+
                 }
-                finally
+                else
                 {
-                    if (!(error))
-                    {
-                        UpdateUserList();
-                        UpdateOUList();
-                        UpdateGroupList();
-                        UpdateAllTextBoxes();
-                        Cursor = Cursors.WaitCursor;
-                        ps.AddCommand("Get-ADForest");
-                        psDomain = ps.Invoke<PSObject>();
-                        string text = Environment.UserDomainName;
-                        this.Text = "PowerShell GUI " + Program.version + " [" + Environment.UserDomainName + "\\" + userName + "]";
-                        Cursor = Cursors.Default;
-                    }
-                    else { Application.Exit(); }
+                    MessageBox.Show("Perhaps you do not have a component for working with ActiveDirectory \nContact your system administrator!", "An error occurred!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
                 }
+                error = true;
+            }
+            finally
+            {
+                if (!(error))
+                {
+                    UpdateUserList();
+                    UpdateOUList();
+                    UpdateGroupList();
+                    UpdateAllTextBoxes();
+                    Cursor.Current = Cursors.WaitCursor;
+                    ps.AddCommand("Get-ADForest");
+                    psDomain = ps.Invoke<PSObject>();
+                    checkPSErrors();
+                    string text = Environment.UserDomainName;
+                    this.Text = Program.name + " " + Program.version + " [" + Environment.UserDomainName + "\\" + userName + "]";
+                    Cursor.Current = Cursors.Default;
+                }
+                else { Application.Exit(); }
+            }
         }
 
         private void AddUserButton_Click(object sender, EventArgs e)
@@ -222,65 +391,93 @@ namespace PowerShellAutomation
             UserCreateF.Show();
         }
 
-        private void TestButton_Click(object sender, EventArgs e)
-        {
-            string path = @"script.ps1";
 
-            string commandline = "Testing 123 !@##%(*@%/. ТЕСТИРОВАНИЕ символов на наличие ошибок \n" +
-                UsersComboBox.Text + "\n" + GivenNametextBox.Text + "\n" + SurNametextBox.Text + "\n" + SamAccountNameTextBox.Text + "\n" + GUIDtextBox.Text + "\n";
-            /*
-            using (FileStream fs = File.Create(path))
-            {
-                byte[] info = new UTF32Encoding(true).GetBytes(commandline);
-                fs.Write(info, 0, info.Length);
-            }
-            */
-            string[] nameDomain = Convert.ToString(Program.Mainform.psDomain[0].Properties["Name"].Value).Split('.');
-            string Path = "OU=" + "$OU" + ",DC=" + Convert.ToString(nameDomain[0]) + ",DC=" + Convert.ToString(nameDomain[1]);
-            string psCommand = "Import-Module ActiveDirectory\n" +
-                               "$pass = ConvertTo-SecureString " + "$Password" + " -AsPlainText -force\n" +
-                               "New-ADUser -Name \"" + "$Name" + "\" -GivenName \"" + "$GivenName" + "\" -Surname \"" + "$Surname" + "\" -SamAccountName \"" + "$SamAccountName" + "\" -UserPrincipalName \"" + "$UserPrincipalName" + "\" -Path \"" + Path + "\" -AccountPassword $pass -Enabled $true";
-            MessageBox.Show(psCommand, "Команда воспроизвадимая Powershell");
-            StreamWriter stream = new StreamWriter(path, true, Encoding.Default, 10);
-            stream.Write(commandline);
-            stream.Close();
-            stream.Dispose();
-        }
-
-        private void UserRemoveButton_Click(object sender, EventArgs e)
+        private void UserSwitchButton_Click(object sender, EventArgs e)
         {
             string[] nameDomain = Convert.ToString(Program.Mainform.psDomain[0].Properties["Name"].Value).Split('.');
-            
+
             if (SamAccountNameTextBox.Text != "")
             {
-                DialogResult result = MessageBox.Show("Что хотите удалить пользователя с именем " + UsersComboBox.Text, "Вы уверены?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-
-                switch (result)
+                if (SamAccountNameTextBox.Text == "Administrator")
                 {
-                    case DialogResult.Yes:
-                        ps.Commands.Clear();
-                        ps.AddScript("Import-Module ActiveDirectory\n" + "Remove-ADUser " + SamAccountNameTextBox.Text + " -Confirm:$false").Invoke();
-                        ps.Commands.Clear();
-                        UpdateUserList();
-                        UsersComboBox.Text = "";
-                        GivenNametextBox.Text = "";
-                        SurNametextBox.Text = "";
-                        SamAccountNameTextBox.Text = "";
-                        GUIDtextBox.Text = "";
-                        SIDtextBox.Text = "";
-                        GroupListBox.Items.Clear();
-                        DistinguishedNameListBox.Items.Clear();
-                        break;
-                    case DialogResult.No:
 
-                        break;
+                    if (lang == "ru")
+                    {
+                        MessageBox.Show("Взаимодействие с пользователем Administrator запрещено!", "Доступ запрещен!", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Interaction with the Administrator user is prohibited!", "Access is denied!", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                    }
+                }
+                else
+                {
+                    if (radioButton1.Checked)
+                    {
+                        DialogResult result;
+                        if (lang == "ru")
+                        {
+                            result = MessageBox.Show("Что хотите выключить пользователя с именем " + UsersComboBox.Text, "Вы уверены?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                        }
+                        else
+                        {
+                            result = MessageBox.Show("What do you want to disable a user named " + UsersComboBox.Text, "Are you sure ? ", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                        }
+                        switch (result)
+                        {
+                            case DialogResult.Yes:
+                                ps.Commands.Clear();
+                                ps.AddScript("Import-Module ActiveDirectory\n" + "Set-ADUser " + SamAccountNameTextBox.Text + " -Enable:$false").Invoke();
+                                checkPSErrors();
+                                ps.Commands.Clear();
+                                GetButton_Click(sender, e);
+                                break;
+                            case DialogResult.No:
+
+                                break;
+                        }
+                    }
+                    else {
+                        DialogResult result;
+                        if (lang == "ru")
+                        {
+                            result = MessageBox.Show("Что хотите включить пользователя с именем " + UsersComboBox.Text, "Вы уверены?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                        }
+                        else
+                        {
+                            result = MessageBox.Show("What do you want to enable a user named " + UsersComboBox.Text, "Are you sure ? ", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                        }
+                        switch (result)
+                        {
+                            case DialogResult.Yes:
+                                ps.Commands.Clear();
+                                ps.AddScript("Import-Module ActiveDirectory\n" + "Set-ADUser " + SamAccountNameTextBox.Text + " -Enable:$true").Invoke();
+                                checkPSErrors();
+                                ps.Commands.Clear();
+                                GetButton_Click(sender, e);
+                                break;
+                            case DialogResult.No:
+                                break;
+                        }
+                    }
+                    
                 }
             }
-            else { MessageBox.Show("Выберите пользователя", "", MessageBoxButtons.OK, MessageBoxIcon.Information); }
+            else { 
+                
+                if (lang == "ru")
+                {
+                    MessageBox.Show("Выберите пользователя", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show("Select user", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
 
         }
-                
-        public void WIP_Message() 
+
+        public void WIP_Message()
         {
             MessageBox.Show("Данная функция сейчас в разработке.", "WIP", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
@@ -316,7 +513,57 @@ namespace PowerShellAutomation
                 nightmode = true;
             }
         }
+
+        private void resetPass_Click(object sender, EventArgs e)
+        {
+            if (UsersComboBox.SelectedIndex != -1) {
+                if (SamAccountNameTextBox.Text != "Administrator")
+                {
+                    this.Enabled = false;
+                    ResetPass ResetPassForm = new ResetPass();
+                    ResetPassForm.Show();
+                }
+                else
+                {
+                    if (lang == "ru")
+                    {
+                        MessageBox.Show("Нельзя сменить пароль у " + SamAccountNameTextBox.Text, "Упс..", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    else
+                    {
+                        MessageBox.Show("You cannot change the password for " + SamAccountNameTextBox.Text, "Oops ..", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+            else {
+                if (lang == "ru")
+                {
+                    MessageBox.Show("Выберите пользователя из выпадающего списка!", "Упс..", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else
+                {
+                    MessageBox.Show("Select a user from the drop-down list!", "Oops ..", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private void linkLabelLanguage_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+
+            if (linkLabelLanguage.Text == "ru") {
+                linkLabelLanguage.Text = "en";
+            }
+            else
+            {
+                linkLabelLanguage.Text = "ru";
+            }
+            lang = linkLabelLanguage.Text;
+            ChangeLanguage();
+            GetButton_Click(sender, e);        }
+
+        private void Main_Validated(object sender, EventArgs e)
+        {
+            ChangeLanguage();
+        }
     }
-
-
 }

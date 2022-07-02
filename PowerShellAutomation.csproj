@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{DF007089-F029-4C30-8F67-D9BAAC09B255}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>PowerShellAutomation</RootNamespace>
-    <AssemblyName>PowerShellAutomation</AssemblyName>
+    <RootNamespace>ADUserAndGroupManager</RootNamespace>
+    <AssemblyName>ADUserAndGroupManager</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -31,6 +31,9 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>files\powershell.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -65,6 +68,12 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="ResetPass.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ResetPass.Designer.cs">
+      <DependentUpon>ResetPass.cs</DependentUpon>
+    </Compile>
     <Compile Include="StopIt.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -91,11 +100,35 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Main.en.resx">
+      <DependentUpon>Main.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Main.ru.resx">
+      <DependentUpon>Main.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ResetPass.en.resx">
+      <DependentUpon>ResetPass.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ResetPass.resx">
+      <DependentUpon>ResetPass.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ResetPass.ru.resx">
+      <DependentUpon>ResetPass.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="StopIt.resx">
       <DependentUpon>StopIt.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UserCreate.en.resx">
+      <DependentUpon>UserCreate.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UserCreate.resx">
       <DependentUpon>UserCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserCreate.ru.resx">
+      <DependentUpon>UserCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserGroupConfig.en.resx">
+      <DependentUpon>UserGroupConfig.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserGroupConfig.resx">
       <DependentUpon>UserGroupConfig.cs</DependentUpon>
@@ -107,6 +140,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserGroupConfig.ru.resx">
+      <DependentUpon>UserGroupConfig.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
